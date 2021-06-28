@@ -1,15 +1,22 @@
 package apiserver
 
 import (
+	"books-rest-api/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAPIServer_GetAllBooks(t *testing.T) {
-	s := New(NewConfig())
+	c := config.New()
+	err := c.EvalFromFile("../configs/apiserver.toml")
+	if err != nil {
+		t.Error(err)
+	}
+	s := New(c.Server, logrus.New())
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/books", nil)
 	s.Routes()

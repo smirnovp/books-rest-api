@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	go run --race .
+	go run --race ./cmd/main.go
 
 .PHONY: test
 test:

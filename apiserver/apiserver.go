@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"books-rest-api/config"
 	"books-rest-api/storage"
 	"net/http"
 	"time"
@@ -17,26 +18,25 @@ type IStorage interface {
 
 // Server ...
 type Server struct {
-	config  *Config
+	config  *config.ServerConfig
 	logger  *logrus.Logger
 	mux     *gin.Engine
 	storage *storage.Storage
+	Running chan struct{}
 }
 
 // New ...
-func New(config *Config) *Server {
+func New(c *config.ServerConfig, l *logrus.Logger) *Server {
 	return &Server{
-		config: config,
-		logger: logrus.New(),
-		mux:    gin.Default(),
+		config:  c,
+		logger:  l,
+		mux:     gin.Default(),
+		Running: make(chan struct{}),
 	}
 }
 
 // Run ...
 func (s *Server) Run() error {
-	if err := s.configLogLevel(); err != nil {
-		return err
-	}
 
 	server := &http.Server{
 		Addr:           s.config.Addr,
@@ -45,17 +45,11 @@ func (s *Server) Run() error {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+
 	s.Routes()
-	s.logger.Debugf("Server is running on port %s ...", s.config.Addr)
+
+	s.logger.Infof("Server is running on port %s ...", s.config.Addr)
+
+	close(s.Running)
 	return server.ListenAndServe()
-
-}
-
-func (s *Server) configLogLevel() error {
-	level, err := logrus.ParseLevel(s.config.LogLevel)
-	if err != nil {
-		return err
-	}
-	s.logger.SetLevel(level)
-	return nil
 }
