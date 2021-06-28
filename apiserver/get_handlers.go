@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetAllBooks gets all books from the storage
-func (s *Server) GetAllBooks() gin.HandlerFunc {
+// GetAll gets all books from the storage
+func (s *Server) GetAll() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(200, models.Books{
 			models.Book{
@@ -23,5 +23,12 @@ func (s *Server) GetAllBooks() gin.HandlerFunc {
 				ISBN:   "9-326-345-66-4",
 			},
 		})
+	}
+}
+
+// Get ...
+func (s *Server) Get() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
 	}
 }

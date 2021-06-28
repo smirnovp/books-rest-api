@@ -1,7 +1,7 @@
 package apiserver
 
 import (
-	"books-rest-api/models"
+	"books-rest-api/storage"
 	"net/http"
 	"time"
 
@@ -9,12 +9,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+/*// IStorage is an interface to the storage
+type IStorage interface {
+	Add(models.Book)
+	GetAll() models.Books
+}*/
+
 // Server ...
 type Server struct {
 	config  *Config
 	logger  *logrus.Logger
 	mux     *gin.Engine
-	storage models.IStorage
+	storage *storage.Storage
 }
 
 // New ...
