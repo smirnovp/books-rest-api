@@ -3,6 +3,7 @@ package apiserver
 import (
 	"books-rest-api/config"
 	"books-rest-api/storage"
+	"context"
 	"net/http"
 	"time"
 
@@ -18,19 +19,30 @@ type IStorage interface {
 
 // Server ...
 type Server struct {
-	config  *config.ServerConfig
-	logger  *logrus.Logger
-	mux     *gin.Engine
-	storage *storage.Storage
-	Running chan struct{}
+	httpServer *http.Server
+	config     *config.ServerConfig
+	logger     *logrus.Logger
+	mux        *gin.Engine
+	storage    *storage.Storage
+	Running    chan struct{}
 }
 
 // New ...
 func New(c *config.ServerConfig, l *logrus.Logger) *Server {
+
+	mux := gin.Default()
+
 	return &Server{
+		httpServer: &http.Server{
+			Addr:           c.Addr,
+			Handler:        mux,
+			ReadTimeout:    10 * time.Second,
+			WriteTimeout:   10 * time.Second,
+			MaxHeaderBytes: 1 << 20,
+		},
 		config:  c,
 		logger:  l,
-		mux:     gin.Default(),
+		mux:     mux,
 		Running: make(chan struct{}),
 	}
 }
@@ -38,18 +50,21 @@ func New(c *config.ServerConfig, l *logrus.Logger) *Server {
 // Run ...
 func (s *Server) Run() error {
 
-	server := &http.Server{
-		Addr:           s.config.Addr,
-		Handler:        s.mux,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
-	}
-
 	s.Routes()
 
 	s.logger.Infof("Server is running on port %s ...", s.config.Addr)
 
 	close(s.Running)
-	return server.ListenAndServe()
+	err := s.httpServer.ListenAndServe()
+	if err != nil && err != http.ErrServerClosed {
+		return err
+	}
+	return nil
+}
+
+// Stop ...
+func (s *Server) Stop() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return s.httpServer.Shutdown(ctx)
 }

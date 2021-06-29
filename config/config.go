@@ -36,13 +36,13 @@ func New() *Config {
 			Addr: ":8082",
 		},
 		Storage: &StorageConfig{
-			DatabaseURL: "some default  URL string",
+			DatabaseURL: "some default URL string",
 		},
 	}
 }
 
-// EvalFromFile ...
-func (c *Config) EvalFromFile(filename string) error {
+// GetFromFile ...
+func (c *Config) GetFromFile(filename string) error {
 	_, err := toml.DecodeFile(filename, &c)
 	if err != nil {
 		return err

@@ -4,7 +4,7 @@ run:
 
 .PHONY: test
 test:
-	go test --race -v --cover ./...
+	go test --race -v --cover -count=1 ./...
 
 .PHONY: test-html
 test-html:
