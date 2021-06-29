@@ -14,7 +14,7 @@ func main() {
 	flag.Parse()
 
 	cfg := config.New()
-	if err := cfg.EvalFromFile(configFile); err != nil {
+	if err := cfg.GetFromFile(configFile); err != nil {
 		log.Fatal("Could not get config from the file: ", err)
 	}
 

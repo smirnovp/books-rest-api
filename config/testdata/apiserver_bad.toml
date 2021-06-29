@@ -1,0 +1,11 @@
+[server
+addr = :8080"
+
+[logger]
+log_level = "debug"
+
+[storage]
+database_url = "somedb"
+
+[gin]
+mode = "debug"
