@@ -11,12 +11,12 @@ import (
 )
 
 func TestAPIServer_GetAllBooks(t *testing.T) {
-	c := config.New()
-	err := c.EvalFromFile("../configs/apiserver.toml")
+	cfg := config.New()
+	err := cfg.EvalFromFile("../configs/apiserver.toml")
 	if err != nil {
 		t.Error(err)
 	}
-	s := New(c.Server, logrus.New())
+	s := New(cfg.Server, logrus.New())
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/books", nil)
 	s.Routes()

@@ -13,17 +13,17 @@ func main() {
 	flag.StringVar(&configFile, "config-file", "configs/apiserver.toml", "путь к файлу конфигурации API-сервера")
 	flag.Parse()
 
-	config := config.New()
-	if err := config.EvalFromFile(configFile); err != nil {
-		log.Fatal("Could not populate the config structure from a config file: ", err)
+	cfg := config.New()
+	if err := cfg.EvalFromFile(configFile); err != nil {
+		log.Fatal("Could not get config from the file: ", err)
 	}
 
-	logger, err := logger.NewLogger(config.Logger)
+	logger, err := logger.New(cfg.Logger)
 	if err != nil {
 		log.Fatal("Could not get logger: ", err)
 	}
 
-	apiserver := apiserver.New(config.Server, logger)
+	apiserver := apiserver.New(cfg.Server, logger)
 	err = apiserver.Run()
 	if err != nil {
 		log.Fatal(err)
