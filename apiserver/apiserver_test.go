@@ -8,7 +8,20 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
+
+type MockStorage struct {
+	mock.Mock
+}
+
+func (m *MockStorage) Open() error {
+	return nil
+}
+
+func (m *MockStorage) Close() {
+
+}
 
 func TestAPIServer_Handlers(t *testing.T) {
 	cfg := config.New()
@@ -16,7 +29,7 @@ func TestAPIServer_Handlers(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	s := New(cfg.Server, logrus.New())
+	s := New(cfg.Server, logrus.New(), &MockStorage{})
 	s.Routes()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/books", nil)
@@ -37,7 +50,7 @@ func TestAPIServerRUN_OK(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	s := New(cfg.Server, logrus.New())
+	s := New(cfg.Server, logrus.New(), &MockStorage{})
 
 	serverDone := make(chan struct{})
 
@@ -47,6 +60,7 @@ func TestAPIServerRUN_OK(t *testing.T) {
 		if err != nil {
 			// Ошибка при запуске
 			t.Error(err)
+			close(s.Running)
 		}
 		// В этой точке сервер остановлен err == nil
 		defer close(serverDone)
@@ -69,7 +83,7 @@ func TestAPIServerRUN_Fail(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	s := New(cfg.Server, logrus.New())
+	s := New(cfg.Server, logrus.New(), &MockStorage{})
 
 	s.httpServer.Addr = ":888888"
 

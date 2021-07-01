@@ -65,7 +65,7 @@ func TestConfigDefault(t *testing.T) {
 			actual:   cfg.Server.Addr,
 		},
 		{
-			expected: "some default URL string",
+			expected: "host=localhost dbname=books-rest-api sslmode=disable",
 			actual:   cfg.Storage.DatabaseURL,
 		},
 	}

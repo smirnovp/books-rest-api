@@ -2,7 +2,6 @@ package apiserver
 
 import (
 	"books-rest-api/config"
-	"books-rest-api/storage"
 	"context"
 	"net/http"
 	"time"
@@ -11,11 +10,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-/*// IStorage is an interface to the storage
+// IStorage is an interface to the storage
 type IStorage interface {
-	Add(models.Book)
-	GetAll() models.Books
-}*/
+	Open() error
+	Close()
+	//Add(models.Book)
+	//GetAll() models.Books
+}
 
 // Server ...
 type Server struct {
@@ -23,12 +24,12 @@ type Server struct {
 	config     *config.ServerConfig
 	logger     *logrus.Logger
 	mux        *gin.Engine
-	storage    *storage.Storage
+	storage    IStorage
 	Running    chan struct{}
 }
 
 // New ...
-func New(c *config.ServerConfig, l *logrus.Logger, stor *storage.Storage) *Server {
+func New(c *config.ServerConfig, l *logrus.Logger, stor IStorage) *Server {
 
 	gin.SetMode(c.GinMode)
 	mux := gin.Default()
