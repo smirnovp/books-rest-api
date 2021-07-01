@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"books-rest-api/config"
+	"books-rest-api/models"
 	"context"
 	"net/http"
 	"time"
@@ -13,9 +14,11 @@ import (
 // IStorage is an interface to the storage
 type IStorage interface {
 	Open() error
-	Close()
-	//Add(models.Book)
-	//GetAll() models.Books
+	Close() error
+	Add(models.Book) (int64, error)
+	GetAll() (models.Books, error)
+	Delete(int64) (int64, error)
+	Update(int64, models.Book) (int64, error)
 }
 
 // Server ...
