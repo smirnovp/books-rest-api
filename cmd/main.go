@@ -4,6 +4,7 @@ import (
 	"books-rest-api/apiserver"
 	"books-rest-api/config"
 	"books-rest-api/logger"
+	"books-rest-api/storage"
 	"flag"
 	"log"
 )
@@ -23,7 +24,9 @@ func main() {
 		log.Fatal("Could not get logger: ", err)
 	}
 
-	apiserver := apiserver.New(cfg.Server, logger)
+	storage := storage.New(cfg.Storage)
+
+	apiserver := apiserver.New(cfg.Server, logger, storage)
 	err = apiserver.Run()
 	if err != nil {
 		log.Fatal(err)

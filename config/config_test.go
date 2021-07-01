@@ -37,13 +37,13 @@ func TestConfigOK(t *testing.T) {
 func TestConfigFail(t *testing.T) {
 	cfg := New()
 	err := cfg.GetFromFile("testdata/apiserver_bad.toml")
-	assert.NotEqual(t, nil, err)
+	assert.NotNil(t, err)
 }
 
 func TestConfigNotExist(t *testing.T) {
 	cfg := New()
 	err := cfg.GetFromFile("testdata/notexisting.toml")
-	assert.NotEqual(t, nil, err)
+	assert.NotNil(t, err)
 }
 
 func TestConfigDefault(t *testing.T) {
