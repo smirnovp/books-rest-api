@@ -1,11 +1,9 @@
 [server]
 addr = ":8080"
+gin_mode = "release"
 
 [logger]
 log_level = "debug"
 
 [storage]
-database_url = "somedb"
-
-[gin]
-mode = "debug"
+database_url = "host=localhost port=5432 user=postgres password=password dbname=books_rest_api sslmode=disable"

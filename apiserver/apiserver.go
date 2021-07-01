@@ -28,8 +28,9 @@ type Server struct {
 }
 
 // New ...
-func New(c *config.ServerConfig, l *logrus.Logger) *Server {
+func New(c *config.ServerConfig, l *logrus.Logger, stor *storage.Storage) *Server {
 
+	gin.SetMode(c.GinMode)
 	mux := gin.Default()
 
 	return &Server{
@@ -43,6 +44,7 @@ func New(c *config.ServerConfig, l *logrus.Logger) *Server {
 		config:  c,
 		logger:  l,
 		mux:     mux,
+		storage: stor,
 		Running: make(chan struct{}),
 	}
 }
@@ -50,12 +52,17 @@ func New(c *config.ServerConfig, l *logrus.Logger) *Server {
 // Run ...
 func (s *Server) Run() error {
 
+	err := s.storage.Open()
+	if err != nil {
+		return err
+	}
+
 	s.Routes()
 
 	s.logger.Infof("Server is running on port %s ...", s.config.Addr)
 
 	close(s.Running)
-	err := s.httpServer.ListenAndServe()
+	err = s.httpServer.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		return err
 	}
